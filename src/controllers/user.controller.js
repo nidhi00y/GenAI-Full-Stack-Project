@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import config from '../config/config.js';
 import jwt from 'jsonwebtoken';
 import cookies from 'cookie-parser';
+import blacklistTokenModel from '../models/Blacklisttoken.model.js';
 
 async function Register(req, res) {
     const {name,email,password} = req.body;
@@ -16,7 +17,7 @@ async function Register(req, res) {
         await newUser.save();
         const token = jwt.sign({ userId: newUser._id }, config.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true });
-        res.status(201).json({ message: 'User registered successfully' },token);
+        res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error registering user', error: error.message });
     }
@@ -35,11 +36,34 @@ async function Login(req, res) {
         }
         const token = jwt.sign({ userId: user._id }, config.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true });
-        res.status(200).json({ message: 'Login successful, Welcome!' },token);
+        res.status(200).json({ message: 'Login successful, Welcome!' });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }
 
 }
 
-export { Register, Login };
+/**
+ * @route /user/logout
+ * @desc Logout the user by clearing the authentication token
+ */
+
+async function Logout(req, res) {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(400).json({ message: 'No token provided' });
+    }
+    try {
+        const decoded = jwt.verify(token, config.JWT_SECRET);
+        const blacklistToken = new blacklistTokenModel({ token });
+        await blacklistToken.save();
+        res.clearCookie('token');
+        res.status(200).json({ message: 'Logout successful' });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error logging out', error: error.message });
+    }
+}
+
+
+export { Register, Login, Logout};

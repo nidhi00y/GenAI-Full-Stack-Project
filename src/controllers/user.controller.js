@@ -65,5 +65,24 @@ async function Logout(req, res) {
     }
 }
 
+async function getme(req, res) {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+    try {
+        const decoded = jwt.verify(token, config.JWT_SECRET);
+        const blacklistedToken = await blacklistTokenModel.findOne({ token });
+        if (blacklistedToken) {
+            return res.status(401).json({ message: 'Not login' });
+        }
+        const user = await userModel.findById(decoded.userId).select('-password');
+        res.status(200).json({ user });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching user details', error: error.message });
+    }
 
-export { Register, Login, Logout};
+}
+
+
+export { Register, Login, Logout, getme };

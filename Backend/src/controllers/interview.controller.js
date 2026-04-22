@@ -1,10 +1,9 @@
 import express from 'express'
-import InterviewRouter from '../routes/interview.route';
-import interviewReportModel from '../models/interviewreport.model';
+import interviewReportModel from '../models/interviewreport.model.js';
 //to handle pdf files we need multer
 //to read pdf files we can use pdf-parse
 import multer from 'multer';
-import pdfParse from 'pdf-parse';
+import {PDFParse} from 'pdf-parse';
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -27,10 +26,13 @@ async function GenerateInterviewReport(req,res){
             upload.single("resume")
             const resume = req.file
             const resumeData = await pdfParse(req.file.buffer);
-            const result = interviewReportModel({resume: resumeData,selfDescription,jobDescription});
-            const interviewReport = new interviewReportModel({
-                userId: decoded.userId,
-                report: result
+            const result = await interviewReportModel({resume: resumeData,selfDescription,jobDescription});
+            const interviewReport = await interviewReportModel({
+                userId: user._id,
+                resume: resumeData.text,
+                selfDescription,
+                jobDescription,
+                ...result
             });
             await interviewReport.save();
             res.status(201).json({ message: 'Interview report generated successfully', report: interviewReport });
@@ -40,5 +42,5 @@ async function GenerateInterviewReport(req,res){
         }
 }
 
-export default {GenerateInterviewReport}
+export {GenerateInterviewReport};
 

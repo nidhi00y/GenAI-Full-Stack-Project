@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 import { AuthContext } from '../services/auth.context.jsx'
-import {login,register,logout,getCurrentUser} from '../services/auth.service.js'
+import {login,register,logout,getCurrentUser} from '../services/auth.api.js'
 
 export function useAuth(){
     const context = useContext(AuthContext);
@@ -25,7 +25,8 @@ export function useAuth(){
             const response = await register({name,email,password});
             setUser(response.user);
         }catch(error){
-            console.error('Registration error:', error);
+            console.error('Registration error:', error.message);
+            throw error;
         }finally{
             setLoading(false);
         }

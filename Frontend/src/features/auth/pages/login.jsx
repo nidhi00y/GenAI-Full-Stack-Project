@@ -1,22 +1,22 @@
-import {React,useSate} from 'react'
+import {React, useState } from 'react'
 import './login.form.scss'
-import { useNavigate } from 'react-router';
-import { useAuth } from '../services/auth.context.jsx';
+import { Navigate,useNavigate } from 'react-router';
+import { useAuth } from '../hooks/useAuth.js';
 
 
 const Login = () => {
 
     const {loading,handleLogin} = useAuth();
 
-    const [email,setEmail] = useState('');
-    const [password,setPassword] = useState('');
+    const [email,setEmail] = useState("");
+    const [password,setPassword] = useState("");
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
         await handleLogin({email,password});
-        navigate('/');
+        <Navigate to="/"/>
 
     }
 

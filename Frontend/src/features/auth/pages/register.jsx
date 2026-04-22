@@ -1,20 +1,20 @@
-import {React,UseState} from 'react'
+import {React,useState} from 'react'
 import { useNavigate } from 'react-router';
 import './login.form.scss'
-import { useAuth } from '../services/auth.context.jsx';
+import { useAuth } from '../hooks/useAuth.js';
 
 const Register = () => {
 
     const { loading, handleRegister } = useAuth();
     const navigate = useNavigate();
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        await handleRegister({name,email,password});
+        handleRegister({name,email,password});
         navigate('/');
     }
 
@@ -37,7 +37,7 @@ const Register = () => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
-                        <input type="password" id="password" name="password" required />
+                        <input onChange={(e)=>{setPassword(e.target.value)}} type="password" id="password" name="password" required />
                     </div>
                     <button className='button primary-button' type="submit">Sign In</button>
 

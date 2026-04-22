@@ -5,7 +5,11 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "jsonwebtoken": "^9.0.3",
-    "moongose": "^1.0.0"
+    "moongose": "^1.0.0",
+    "multer": "^2.1.1",
+    "pdf-parse": "^2.4.5",
+    "zod": "^4.3.6",
+    "zod-to-json-schema": "^3.25.2"
   },
   "type": "module"
 }

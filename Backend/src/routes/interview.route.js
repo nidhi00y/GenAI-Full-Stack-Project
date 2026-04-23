@@ -1,9 +1,9 @@
 import {Router} from 'express'
-import {GenerateInterviewReport} from '../controllers/interview.controller.js'
+import {GenInterviewReport} from '../controllers/interview.controller.js'
 
 const InterviewRouter = Router()
 
-InterviewRouter.post('/generate',GenerateInterviewReport )
+InterviewRouter.post('/generate',GenInterviewReport )
 
 
 export default InterviewRouter

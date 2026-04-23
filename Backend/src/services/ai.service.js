@@ -2,9 +2,10 @@ const { GoogleGenAI } = require("@google/genai")
 const { z } = require("zod")
 const { zodToJsonSchema } = require("zod-to-json-schema")
 const puppeteer = require("puppeteer")
+import config from "../config/config"
 
 const ai = new GoogleGenAI({
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY
+    GEMINI_API_KEY: config.GEMINI_API_KEY
 })
 
 

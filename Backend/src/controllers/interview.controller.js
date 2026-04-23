@@ -2,14 +2,17 @@ import express from 'express'
 import interviewReportModel from '../models/interviewreport.model.js';
 //to handle pdf files we need multer
 //to read pdf files we can use pdf-parse
-import multer from 'multer';
-import {PDFParse} from 'pdf-parse';
-import genrateinterviewReport from '../services/ai.service.js';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
-const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 3 * 1024 * 1024 }, // 3MB
-});
+const pdfParse = require('pdf-parse');
+import {generateInterviewReport} from '../services/ai.service.js';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import cookies from 'cookie-parser';
+import blacklistTokenModel from '../models/Blacklisttoken.model.js';
+import config from '../config/config.js';
+import userModel from '../models/user.model.js';
 
 async function GenInterviewReport(req,res){
     const token = req.cookies.token;
@@ -24,15 +27,15 @@ async function GenInterviewReport(req,res){
             }
             const user = await userModel.findById(decoded.userId).select('-password');
             const {jobDescription,selfDescription} = req.body;
-            upload.single("resume")
-            const resume = req.file
-            const resumeData = await pdfParse(req.file.buffer);
-            const result = await genrateinterviewReport({resume: resumeData,selfDescription,jobDescription});
-            const interviewReport = await interviewReportModel({
-                userId: user._id,
+            const resumeData = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
+            const result = await generateInterviewReport({resume: resumeData.text,selfDescription,jobDescription});
+            console.log("hello",result)
+            const interviewReport = await interviewReportModel.create({
+                user: user._id,
                 resume: resumeData.text,
                 selfDescription,
                 jobDescription,
+                title:result.title,
                 ...result
             });
             await interviewReport.save();

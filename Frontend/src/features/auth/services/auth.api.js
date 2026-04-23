@@ -12,6 +12,8 @@ export async function register({name,email,password}){
             email,
             password
         });
+        console.log('Registration successful now:', response.data);
+        console.log('User data:', response.data.newUser);
         return response.data;
     }
     catch (error) {
@@ -26,6 +28,7 @@ export async function login({email,password}){
             email,
             password
         });
+        console.log('Login successful 2:', response.data);
         return response.data;
     }
     catch (error) {
@@ -45,7 +48,7 @@ export async function logout(){
 
 export async function getCurrentUser(){
     try {
-        const response = await axios.get('/user/getme', {});
+        const response = await api.get('/user/getme');
         return response.data;
     }
     catch (error) {

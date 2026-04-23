@@ -17,7 +17,7 @@ async function Register(req, res) {
         await newUser.save();
         const token = jwt.sign({ userId: newUser._id }, config.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true });
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ message: 'User registered successfully', newUser});
     } catch (error) {
         res.status(500).json({ message: 'Error registering user', error: error.message });
     }
@@ -36,7 +36,7 @@ async function Login(req, res) {
         }
         const token = jwt.sign({ userId: user._id }, config.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true });
-        res.status(200).json({ message: 'Login successful, Welcome!' });
+        res.status(200).json({ message: 'Login successful, Welcome!',user });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }

@@ -10,6 +10,7 @@ export function useAuth(){
         setLoading(true);
         try{
             const response = await login({email,password});
+            console.log("hello",response);
             setUser(response.user);
         }catch(error){
             console.error('Login error:', error);
@@ -23,7 +24,8 @@ export function useAuth(){
         setLoading(true);
         try{
             const response = await register({name,email,password});
-            setUser(response.user);
+            console.log("hello",response);
+            setUser(response.newUser);
         }catch(error){
             console.error('Registration error:', error.message);
             throw error;

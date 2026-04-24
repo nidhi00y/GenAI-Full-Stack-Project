@@ -9,18 +9,43 @@ const in_api = axios.create({
 
 export async function Send_data({resume,selfDescription,jobDescription}) {
     try{
+        const formdata = new FormData()
+        formdata.append("jobDescription",jobDescription)
+        formdata.append("selfDescription",selfDescription)
+        formdata.append("resume",resume)
+
         const result = await in_api.post("/interview/generate",
-            resume,
-            selfDescription,
-            jobDescription
+            formdata,{
+                headers:{
+                    "Content-Type":"multipart/form-data"
+                }
+            }
         )
+
         return result.data
     }catch(error){
-        console.log("error ocuredd while posting",error);
+        console.log("error occurred while posting",error);
         throw error;
     }
     
 }
 
+export async function get_reportby_id(){
+    try{
+        const r = await in_api.get(`/reports/${id}`)
+        return r.data;
+    }catch(error){
+        console.log("cant get report by id",error);
+        throw error;
+    }
+}
 
-
+export async function get_report_all(){
+    try{
+        const r = await in_api.get('/report')
+        return r.data;
+    }catch(error){
+        console.log("cant get all reports",error);
+        throw error;
+    }
+}

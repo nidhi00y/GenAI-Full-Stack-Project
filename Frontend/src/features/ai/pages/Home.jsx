@@ -1,8 +1,30 @@
 import React from 'react'
 import "../style/home.scss"
-
+import { useInterview } from '../hooks/useInterview.js'
+import { useState } from 'react'
 
 const Home = () => {
+
+    const {loading,generateReport,reports} = useInterview()
+
+    const [jd,setjd] = useState("")
+    const [sd,setsd] = useState("")
+    const {r} = useRef()
+
+    const handleGenerateReport=async(e)=>{
+        const resumefile = r.current.files[0]
+        const data = await generateReport({jd,sd,resumefile})
+        navigate(`/interview/${data.id}`)
+
+    }
+
+    if(loading){
+        return(
+            <main className='loading-screen'>
+                <h1>Loading your interview plan..........</h1>
+            </main>
+        )
+    }
 
     return (
         <div className='home-page'>
@@ -27,7 +49,7 @@ const Home = () => {
                             <span className='badge badge--required'>Required</span>
                         </div>
                         <textarea
-                            onChange={(e) => { setJobDescription(e.target.value) }}
+                            onChange={(e) => { setjd(e.target.value) }}
                             className='panel__textarea'
                             placeholder={`Paste the full job description here...\ne.g. 'Senior Frontend Engineer at Google requires proficiency in React, TypeScript, and large-scale system design...'`}
                             maxLength={5000}
@@ -59,7 +81,7 @@ const Home = () => {
                                 </span>
                                 <p className='dropzone__title'>Click to upload or drag &amp; drop</p>
                                 <p className='dropzone__subtitle'>PDF or DOCX (Max 5MB)</p>
-                                <input ref={resumeInputRef} hidden type='file' id='resume' name='resume' accept='.pdf,.docx' />
+                                <input ref={r} hidden type='file' id='resume' name='resume' accept='.pdf,.docx' />
                             </label>
                         </div>
 
@@ -70,7 +92,7 @@ const Home = () => {
                         <div className='self-description'>
                             <label className='section-label' htmlFor='selfDescription'>Quick Self-Description</label>
                             <textarea
-                                onChange={(e) => { setSelfDescription(e.target.value) }}
+                                onChange={(e) => { setsd(e.target.value) }}
                                 id='selfDescription'
                                 name='selfDescription'
                                 className='panel__textarea panel__textarea--short'

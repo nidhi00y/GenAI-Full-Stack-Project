@@ -5,14 +5,14 @@ import interviewReportModel from '../models/interviewreport.model.js';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const pdfParse = require('pdf-parse');
-import {generateInterviewReport} from '../services/ai.service.js';
+import {generateInterviewReport,generatePdfFromHtml} from '../services/ai.service.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import cookies from 'cookie-parser';
 import blacklistTokenModel from '../models/Blacklisttoken.model.js';
 import config from '../config/config.js';
 import userModel from '../models/user.model.js';
-import interviewReportModel from '../models/interviewreport.model.js';
+import { transformInterviewReport } from '../services/fix.data.js';
 
 async function GenInterviewReport(req,res){
     const token = req.cookies.token;
@@ -29,14 +29,19 @@ async function GenInterviewReport(req,res){
             const {jobDescription,selfDescription} = req.body;
             const resumeData = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
             const result = await generateInterviewReport({resume: resumeData.text,selfDescription,jobDescription});
-            console.log("hello",result)
+            const x = await transformInterviewReport(result)
+            console.log("hello",x)
             const interviewReport = await interviewReportModel.create({
                 user: user._id,
                 resume: resumeData.text,
                 selfDescription,
                 jobDescription,
-                title:result.title,
-                ...result
+                matchScore: x.matchScore,
+                technicalQuestions: x.technicalQuestions,
+                behavioralQuestions: x.behavioralQuestions,
+                skillGaps: x.skillGaps,
+                preparationPlan: x.preparationPlan,
+                title: x.title,
             });
             await interviewReport.save();
             res.status(201).json({ message: 'Interview report generated successfully', report: interviewReport });
@@ -92,5 +97,24 @@ async function GetAllReports(req,res){
         }
 }
 
-export {GenInterviewReport,GetReportById,GetAllReports};
+async function generateresumepdf(req,res){
+    const {id} = req.params
+
+    const intreport = await interviewReportModel.findById(id)
+    if(!intreport){
+        return res.status(404).json({message:"Interview report not found"})
+    }
+    const {resume , jobDescription,selfDescription} = intreport
+    const pdfBuffer = await generateResumePdf({ resume, jobDescription, selfDescription })
+
+    res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename=resume_${interviewReportId}.pdf`
+    })
+
+    res.send(pdfBuffer)
+
+}
+
+export {GenInterviewReport,GetReportById,GetAllReports,generateresumepdf};
 

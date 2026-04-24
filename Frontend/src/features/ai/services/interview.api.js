@@ -49,3 +49,10 @@ export async function get_report_all(){
         throw error;
     }
 }
+
+export async function get_reume_pdf(){
+    const response = await in_api.post(`/interview/reports/pdf/${id}`,{
+        responseType:"blob"
+})
+    return response.data
+}

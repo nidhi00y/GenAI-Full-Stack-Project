@@ -5,14 +5,13 @@ import interviewReportModel from '../models/interviewreport.model.js';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const pdfParse = require('pdf-parse');
-import {generateInterviewReport,generatePdfFromHtml} from '../services/ai.service.js';
+import { generateInterviewReport, generateResumePdf } from '../services/ai.service.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import cookies from 'cookie-parser';
 import blacklistTokenModel from '../models/Blacklisttoken.model.js';
 import config from '../config/config.js';
 import userModel from '../models/user.model.js';
-import { transformInterviewReport } from '../services/fix.data.js';
 
 async function GenInterviewReport(req,res){
     const token = req.cookies.token;
@@ -29,8 +28,7 @@ async function GenInterviewReport(req,res){
             const {jobDescription,selfDescription} = req.body;
             const resumeData = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
             const result = await generateInterviewReport({resume: resumeData.text,selfDescription,jobDescription});
-            const x = await transformInterviewReport(result)
-            console.log("hello",x)
+            console.log("hello",result)
             const interviewReport = await interviewReportModel.create({
                 user: user._id,
                 resume: resumeData.text,

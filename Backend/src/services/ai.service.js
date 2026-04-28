@@ -1,13 +1,11 @@
-import { GoogleGenAI } from "@google/genai"
-import puppeteer from "puppeteer"
-import config from "../config/config.js"
-import { z } from "zod"
-import { zodToJsonSchema } from "zod-to-json-schema"
-import prompt from "./prompt.js"
-
+import { GoogleGenAI } from "@google/genai";
+import config from "../config/config.js";
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import puppeteer from "puppeteer";
 
 const ai = new GoogleGenAI({
-    GEMINI_API_KEY: config.GEMINI_API_KEY
+    apiKey: config.GEMINI_API_KEY
 })
 
 
@@ -37,13 +35,19 @@ const interviewReportSchema = z.object({
 
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
 
-    const p = prompt({resume,selfDescription,jobDescription});
+
+    const prompt = `Generate an interview report for a candidate with the following details:
+                        Resume: ${resume}
+                        Self Description: ${selfDescription}
+                        Job Description: ${jobDescription}
+`
+
     const response = await ai.models.generateContent({
-        model: "gemini-3.1-flash-lite-preview",
-        contents: p,
+        model: "gemini-3-flash-preview",
+        contents: prompt,
         config: {
             responseMimeType: "application/json",
-            responseJsonSchema: zodToJsonSchema(interviewReportSchema),
+            responseSchema: zodToJsonSchema(interviewReportSchema),
         }
     })
 
@@ -51,6 +55,8 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
 
 
 }
+
+
 
 async function generatePdfFromHtml(htmlContent) {
     const browser = await puppeteer.launch()
@@ -108,4 +114,4 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
 
 }
 
-export { generateInterviewReport,generatePdfFromHtml }
+export { generateInterviewReport, generateResumePdf }

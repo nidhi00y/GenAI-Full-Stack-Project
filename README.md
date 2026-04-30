@@ -1,4 +1,4 @@
-#GenAI Resume & Interview Intelligence Platform
+GenAI Resume & Interview Intelligence Platform
 
 An AI-powered platform that helps candidates prepare strategically for job applications by analyzing resumes, generating ATS scores, and delivering personalized interview preparation resources.
 

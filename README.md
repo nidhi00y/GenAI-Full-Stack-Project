@@ -40,7 +40,7 @@ Gemini API (for content generation & analysis)
 
 ⚙️ Installation & Setup
 1. Clone the Repository
-git clone https://github.com/your-username/genai-resume-platform.git
+git clone https://github.com/nidhi00y/GenAI-Full-Stack-Project
 cd genai-resume-platform
 2. Install Dependencies
 npm install
